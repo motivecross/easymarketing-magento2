@@ -1,0 +1,55 @@
+<?php /* @var $block \Motive\Easymarketing\Block\System\Config\Collect */ ?>
+
+<script>
+    require([
+        'jquery',
+        'prototype'
+    ], function(jQuery) {
+
+        var buttonSpan = jQuery('#verification_span');
+
+        jQuery('#verification_button').click(function() {
+            new Ajax.Request('<?php echo $block->getVerificationUrl() ?>', {
+                loaderArea: true,
+                asynchronous: true,
+                onCreate: function() {
+                    buttonSpan.find('.todo').hide();
+                    buttonSpan.find('.done').hide();
+                    buttonSpan.find('.processing').show();
+                    jQuery('#verification_message_span').text('');
+                },
+                onComplete: function(response) {
+                    buttonSpan.find('.processing').hide();
+
+                    var resultText = '';
+                    if(response.status == 401) {
+                        resultText = "Falscher Access Token";
+                        buttonSpan.find('.todo').show();
+                    } else if(response.status == 200) {
+                        resultText = '';
+                        buttonSpan.find('.done').show();
+                    } else {
+                        var responseObj = JSON.parse(response.responseText);
+                        console.log(responseObj.parser_errors);
+                        resultText = responseObj.errors.join('<br>');
+
+                        buttonSpan.find('.todo').show();
+                    }
+                    jQuery('#verification_message_span').html(resultText);
+                }
+            });
+        });
+
+    });
+</script>
+
+<?php echo $block->getButtonHtml() ?>
+<span class="verification-indicator" id="verification_span">
+    <img class="todo" style="margin:0 5px"
+         src="<?php echo $block->getViewFileUrl('images/rule_component_remove.gif') ?>"/>
+    <img class="processing" hidden="hidden" style="margin:0 5px"
+         src="<?php echo $block->getViewFileUrl('images/process_spinner.gif') ?>"/>
+    <img class="done" hidden="hidden" style="margin:-3px 5px"
+         src="<?php echo $block->getViewFileUrl('images/rule_component_apply.gif') ?>"/>
+    <span id="verification_message_span" style="color: red; display: block; margin-top: 5px;"></span>
+</span>
