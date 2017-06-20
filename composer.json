@@ -17,9 +17,7 @@
     }
   ],
   "autoload": {
-    "files": [
-      "registration.php"
-    ],
+    "files": [ "registration.php" ],
     "psr-4": {
       "Motive\\Easymarketing\\": ""
     }
@@ -31,11 +29,5 @@
         "Motive/Easymarketing/"
       ]
     ]
-  },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/motivecross/easymarketing-magento2"
-    }
-  ]
+  }
 }
