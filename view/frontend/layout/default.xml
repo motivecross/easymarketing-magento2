@@ -2,8 +2,12 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceBlock name="head.additional">
-            <block class="Motive\Easymarketing\Block\Page\Head\Verification" name="motive_easymarketing_site_verification" template="Motive_Easymarketing::page/head/verification.phtml">
+            <block class="Motive\Easymarketing\Block\Page\Tracker" name="motive_easymarketing_site_googleverification" template="Motive_Easymarketing::page/head/googleverification.phtml">
             </block>
         </referenceBlock>
+
+        <referenceContainer name="before.body.end">
+            <block class="Motive\Easymarketing\Block\Page\Tracker" template="Motive_Easymarketing::page/body/googleremarketing.phtml" name="motive_easymarketing_site_googleremarketing" after="-" />
+        </referenceContainer>
     </body>
 </page>

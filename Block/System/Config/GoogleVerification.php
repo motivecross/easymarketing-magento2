@@ -1,4 +1,5 @@
 <?php
+
 namespace Motive\Easymarketing\Block\System\Config;
 
 use Magento\Backend\Block\Template\Context;
@@ -43,8 +44,7 @@ class GoogleVerification extends Field
      * @param  AbstractElement $element
      * @return string
      */
-    public function render(AbstractElement $element)
-    {
+    public function render(AbstractElement $element) {
         $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
         return parent::render($element);
     }
@@ -55,81 +55,79 @@ class GoogleVerification extends Field
      * @param  AbstractElement $element
      * @return string
      */
-    protected function _getElementHtml(AbstractElement $element)
-    {
+    protected function _getElementHtml(AbstractElement $element) {
         return $this->_toHtml();
     }
 
     /**
-     * Return ajax url for endpoint button
+     * Get Verification Ajax Url
      *
      * @return string
      */
-    public function getVerificationUrl()
-    {
-        $accessToken = $this->_helper->getConfig('easymarketingsection/easmarketinggeneral/access_token');
-
-        return $this->_getUrl . '?access_token=' . $accessToken;
-    }
-
-    /**
-     * Return ajax params for configuration endpoint
-     *
-     * @return string
-     */
-    public function getAjaxParams() {
-        $paramsArray = array();
-
-        $storeId = $this->_helper->getParam('store');
-
-        $baseUrl = $this->_storeManager->getStore($storeId)->getBaseUrl();
-        $paramsArray['website_url'] = parse_url($baseUrl, PHP_URL_HOST);
-
-        $paramsArray['access_token'] = $this->_helper->getConfig('easymarketingsection/easmarketinggeneral/access_token', $storeId);
-
-        $paramsArray['shop_token'] = $this->_helper->getConfig('easymarketingsection/easmarketinggeneral/shop_token', $storeId);
-
-        $rootCategory = $this->_helper->getConfig('easymarketingsection/easmarketinggeneral/rootcategory');
-        if(empty($rootCategory)) $rootCategory = 1;
-        $paramsArray['shop_category_root_id'] = $rootCategory;
-
-        $paramsArray['categories_api_endpoint'] = $baseUrl . 'easymarketing/api/categories';
-
-        $paramsArray['products_api_endpoint'] = $baseUrl . 'easymarketing/api/products';
-
-        return json_encode($paramsArray, $this->_helper->jsonParameters);
-    }
-
-    /**
-     * Return url for extraction status
-     *
-     * @return string
-     */
-    public function getExtractionUrl() {
-        $accessToken = $this->_helper->getConfig('easymarketingsection/easmarketinggeneral/access_token');
-
+    public function getVerificationUrl() {
         $storeId = $this->_helper->getParam('store');
         $baseUrl = $this->_storeManager->getStore($storeId)->getBaseUrl();
 
-        return $this->_extractionUrl . '?access_token=' . $accessToken . '&website_url=' . parse_url($baseUrl, PHP_URL_HOST);
+        return $baseUrl . "easymarketing/system/savegoogleverification";
     }
 
     /**
-     * Generate endpoint button html
+     * Generate button html
      *
      * @return string
      */
-    public function getButtonHtml()
-    {
+    public function getButtonHtml() {
         $button = $this->getLayout()->createBlock(
             'Magento\Backend\Block\Widget\Button'
         )->setData(
             [
-                'id' => 'googleverification_button',
-                'label' => __('Google Site Verification durchführen'),
+                'id' => 'verification_button',
+                'label' => __('Google Site Verification durchführen / aufheben'),
             ]
         );
 
         return $button->toHtml();
+    }
+
+    public function getCurrentStatus() {
+        $status = $this->_helper->dbFetchOne("google_verification_status");
+        $meta = $this->_helper->dbFetchOne("google_verification_meta");
+
+        if(empty($status) || empty($meta)) {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+
+    /**
+     * Generate current status image
+     *
+     * @return string
+     */
+    public function getCurrentStatusImage() {
+        if($this->getCurrentStatus()) {
+            return $this->getSuccessImage();
+        } else {
+            return $this->getFailImage();
+        }
+    }
+
+    /**
+     * Generate success image
+     *
+     * @return string
+     */
+    public function getSuccessImage() {
+        return $this->getViewFileUrl('Motive_Easymarketing::images/rule_component_apply.gif');
+    }
+
+    /**
+     * Generate fail image
+     *
+     * @return string
+     */
+    public function getFailImage() {
+        return $this->getViewFileUrl('Motive_Easymarketing::images/rule_component_remove.gif');
     }
 }

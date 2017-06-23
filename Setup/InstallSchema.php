@@ -30,6 +30,11 @@ class InstallSchema implements InstallSchemaInterface
             '2M',
             []
         )->addColumn(
+            'data_scope',
+            \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+            null,
+            ['nullable' => false]
+        )->addColumn(
             'data_modified',
             \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
             null,

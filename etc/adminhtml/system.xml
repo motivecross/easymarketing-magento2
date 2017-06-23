@@ -9,119 +9,131 @@
             <label>API</label>
             <tab>emtab</tab>
             <resource>Motive_Easymarketing::easymarketing_configuration</resource>
-            <group id="easmarketinggeneral" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="easmarketinggeneral" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>Allgemein</label>
-                <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Aktiviert</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="extractionstatus" translate="label" type="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="extractionstatus" translate="label" type="label" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Status:</label>
                     <frontend_model>Motive\Easymarketing\Block\System\Config\Form\Field\Status</frontend_model>
                 </field>
-                <field id="google_verification" translate="label" type="button" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label></label>
-                    <frontend_model>Motive\Easymarketing\Block\System\Config\GoogleVerification</frontend_model>
-                </field>
-                <field id="shop_token" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="shop_token" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Shop Token</label>
                     <frontend_model>Motive\Easymarketing\Block\System\Config\Form\Field\Disable</frontend_model>
                 </field>
-                <field id="access_token" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="access_token" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Access Token</label>
                     <comment>Bitte kopieren Sie diesen Token von Ihrem Easymarketing Account.</comment>
                 </field>
-                <field id="rootcategory" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="rootcategory" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Root Kategorie</label>
                     <source_model>Motive\Easymarketing\Model\Config\Source\Categorylist</source_model>
                 </field>
-                <field id="shipping_countries" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="shipping_countries" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Shipping Countries</label>
                 </field>
+                <field id="google_verification" translate="label" type="button" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label></label>
+                    <frontend_model>Motive\Easymarketing\Block\System\Config\GoogleVerification</frontend_model>
+                </field>
+                <field id="google_tracking_enable" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Google Tracking Aktivieren</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="google_remarketing_enable" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Google Remarketing Aktivieren</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="facebook_tracking_enable" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Facebook Tracking Aktivieren</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
             </group>
-            <group id="easymarketingassign" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="easymarketingassign" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>Felderzuordnung</label>
-                <field id="name" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="name" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>name</label>
                     <frontend_model>Motive\Easymarketing\Block\System\Config\Form\Field\Attributes</frontend_model>
                 </field>
-                <field id="useshortdescription" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="useshortdescription" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Kurzbeschreibung verwenden</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="gtin" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="gtin" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>gtin</label>
                     <frontend_model>Motive\Easymarketing\Block\System\Config\Form\Field\Attributes</frontend_model>
                 </field>
-                <field id="condition" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="condition" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>condition</label>
                     <frontend_model>Motive\Easymarketing\Block\System\Config\Form\Field\Attributes</frontend_model>
                 </field>
-                <field id="google_category" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="google_category" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>google_category</label>
                     <frontend_model>Motive\Easymarketing\Block\System\Config\Form\Field\Attributes</frontend_model>
                 </field>
-                <field id="adult" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="adult" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>adult</label>
                     <frontend_model>Motive\Easymarketing\Block\System\Config\Form\Field\Attributes</frontend_model>
                 </field>
-                <field id="brand" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="brand" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>brand</label>
                     <frontend_model>Motive\Easymarketing\Block\System\Config\Form\Field\Attributes</frontend_model>
                 </field>
-                <field id="mpn" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="mpn" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>mpn</label>
                     <frontend_model>Motive\Easymarketing\Block\System\Config\Form\Field\Attributes</frontend_model>
                 </field>
-                <field id="unit_pricing_measure" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="unit_pricing_measure" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>unit_pricing_measure</label>
                     <frontend_model>Motive\Easymarketing\Block\System\Config\Form\Field\Attributes</frontend_model>
                 </field>
-                <field id="unit_pricing_base_measure" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="unit_pricing_base_measure" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>unit_pricing_base_measure</label>
                     <frontend_model>Motive\Easymarketing\Block\System\Config\Form\Field\Attributes</frontend_model>
                 </field>
-                <field id="gender" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="gender" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>gender</label>
                     <frontend_model>Motive\Easymarketing\Block\System\Config\Form\Field\Attributes</frontend_model>
                 </field>
-                <field id="age_group" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="age_group" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>age_group</label>
                     <frontend_model>Motive\Easymarketing\Block\System\Config\Form\Field\Attributes</frontend_model>
                 </field>
-                <field id="color" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="color" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>color</label>
                     <frontend_model>Motive\Easymarketing\Block\System\Config\Form\Field\Attributes</frontend_model>
                 </field>
-                <field id="size" translate="label" type="text" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="size" translate="label" type="text" sortOrder="110" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>size</label>
                     <frontend_model>Motive\Easymarketing\Block\System\Config\Form\Field\Attributes</frontend_model>
                 </field>
-                <field id="size_type" translate="label" type="text" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="size_type" translate="label" type="text" sortOrder="120" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>size_type</label>
                     <frontend_model>Motive\Easymarketing\Block\System\Config\Form\Field\Attributes</frontend_model>
                 </field>
-                <field id="size_system" translate="label" type="text" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="size_system" translate="label" type="text" sortOrder="130" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>size_system</label>
                     <frontend_model>Motive\Easymarketing\Block\System\Config\Form\Field\Attributes</frontend_model>
                 </field>
-                <field id="material" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="material" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>material</label>
                     <frontend_model>Motive\Easymarketing\Block\System\Config\Form\Field\Attributes</frontend_model>
                 </field>
-                <field id="pattern" translate="label" type="text" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="pattern" translate="label" type="text" sortOrder="150" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>pattern</label>
                     <frontend_model>Motive\Easymarketing\Block\System\Config\Form\Field\Attributes</frontend_model>
                 </field>
-                <field id="free_1" translate="label" type="text" sortOrder="1000" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="free_1" translate="label" type="text" sortOrder="1000" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>free_1</label>
                     <frontend_model>Motive\Easymarketing\Block\System\Config\Form\Field\Attributes</frontend_model>
                 </field>
-                <field id="free_2" translate="label" type="text" sortOrder="1001" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="free_2" translate="label" type="text" sortOrder="1001" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>free_2</label>
                     <frontend_model>Motive\Easymarketing\Block\System\Config\Form\Field\Attributes</frontend_model>
                 </field>
-                <field id="free_3" translate="label" type="text" sortOrder="1002" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="free_3" translate="label" type="text" sortOrder="1002" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>free_3</label>
                     <frontend_model>Motive\Easymarketing\Block\System\Config\Form\Field\Attributes</frontend_model>
                 </field>

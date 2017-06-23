@@ -1,55 +1,84 @@
 <?php /* @var $block \Motive\Easymarketing\Block\System\Config\Collect */ ?>
 
-<script>
-    require([
-        'jquery',
-        'prototype'
-    ], function(jQuery) {
+    <script>
+        require([
+            'jquery',
+            'prototype',
+            'Magento_Ui/js/modal/modal',
+            'Magento_Ui/js/modal/alert'
+        ], function(jQuery, prototype, modal, alert) {
 
-        var buttonSpan = jQuery('#verification_span');
+            var buttonSpan = jQuery('#verification_span');
 
-        jQuery('#verification_button').click(function() {
-            new Ajax.Request('<?php echo $block->getVerificationUrl() ?>', {
-                loaderArea: true,
-                asynchronous: true,
-                onCreate: function() {
-                    buttonSpan.find('.todo').hide();
-                    buttonSpan.find('.done').hide();
-                    buttonSpan.find('.processing').show();
-                    jQuery('#verification_message_span').text('');
-                },
-                onComplete: function(response) {
-                    buttonSpan.find('.processing').hide();
+            function callAlert(text) {
+                alert({
+                    title: 'Google Site Verification',
+                    content: text
+                });
+            }
 
-                    var resultText = '';
-                    if(response.status == 401) {
-                        resultText = "Falscher Access Token";
-                        buttonSpan.find('.todo').show();
-                    } else if(response.status == 200) {
-                        resultText = '';
-                        buttonSpan.find('.done').show();
-                    } else {
-                        var responseObj = JSON.parse(response.responseText);
-                        console.log(responseObj.parser_errors);
-                        resultText = responseObj.errors.join('<br>');
+            jQuery('#verification_button').click(function() {
 
-                        buttonSpan.find('.todo').show();
-                    }
-                    jQuery('#verification_message_span').html(resultText);
-                }
+                var options = {
+                    type: 'popup',
+                    responsive: true,
+                    innerScroll: true,
+                    title: 'Google Site Verification',
+                    buttons: [{
+                        text: jQuery.mage.__('Ja'),
+                        class: '',
+                        click: function() {
+                            this.closeModal();
+
+                            var $modalParagraphs = jQuery('#verification-modal p');
+
+                            new Ajax.Request('<?php echo $block->getVerificationUrl() ?>', {
+                                loaderArea: true,
+                                asynchronous: true,
+                                method: 'GET',
+                                onComplete: function(response) {
+                                    var responseObj = JSON.parse(response.responseText);
+                                    if(responseObj.status == 0) {
+                                        callAlert("Falscher Access Token.");
+                                    } else if(responseObj.status == 1) {
+                                        callAlert(responseObj.errors.join('<br>'));
+                                    } else if(responseObj.status == 2) {
+                                        jQuery('#googleverificationstatus').attr('src', '<?php echo $block->getSuccessImage() ?>');
+                                        callAlert('Google Verification erfolgreich.');
+                                        $modalParagraphs.eq(0).hide();
+                                        $modalParagraphs.eq(1).show();
+                                    } else if(responseObj.status == 3) {
+                                        jQuery('#googleverificationstatus').attr('src', '<?php echo $block->getFailImage() ?>');
+                                        callAlert('Google Verification deaktiviert.')
+                                        $modalParagraphs.eq(1).hide();
+                                        $modalParagraphs.eq(0).show();
+                                    }
+                                }
+                            });
+                        }
+                    }, {
+                        text: jQuery.mage.__('Nein'),
+                        class: '',
+                        click: function() {
+                            this.closeModal();
+                        }
+                    }]
+                };
+
+                var popup = modal(options, jQuery('#verification-modal'));
+
+                jQuery('#verification-modal').modal('openModal');
             });
+
         });
+    </script>
 
-    });
-</script>
-
+    <div id="verification-modal" style="display: none;">
+        <p style="<?php if($block->getCurrentStatus()) echo 'display: none;' ?>">Ich stimme zu, dass Google easymarketing bei meiner URL-Verifikation als weiteren "Inhaber" einträgt, damit
+            easymarketing meine Daten für Google Shopping über die Schnittstelle pflegen und auslesen kann. Ich kann
+            diese Zustimmung natürlich jederzeit widerrufen. easymarketing wird meine Daten unter keinen Umständen zu
+            anderen Zwecken als meiner Kampagnen-Steuerung verwenden, weitergeben oder bei sich speichern.<br><br>Bei Durchführung der Verification wird der Magento Cache geleert.</p>
+        <p style="<?php if(!$block->getCurrentStatus()) echo 'display: none;' ?>">Bei Aufhebung der Verifikation wird der Magento Cache geleert.</p>
+    </div>
 <?php echo $block->getButtonHtml() ?>
-<span class="verification-indicator" id="verification_span">
-    <img class="todo" style="margin:0 5px"
-         src="<?php echo $block->getViewFileUrl('images/rule_component_remove.gif') ?>"/>
-    <img class="processing" hidden="hidden" style="margin:0 5px"
-         src="<?php echo $block->getViewFileUrl('images/process_spinner.gif') ?>"/>
-    <img class="done" hidden="hidden" style="margin:-3px 5px"
-         src="<?php echo $block->getViewFileUrl('images/rule_component_apply.gif') ?>"/>
-    <span id="verification_message_span" style="color: red; display: block; margin-top: 5px;"></span>
-</span>
+<span style="display: inline-block; width: 20px; height: 20px; position: relative; top: 3px; left: 10px;"><img id="googleverificationstatus" src="<?php echo $block->getCurrentStatusImage() ?>"></span>

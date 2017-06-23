@@ -12,14 +12,24 @@ class ConfigObserver implements ObserverInterface
 
     protected $_storeManager;
 
-    protected $_apiUrl = 'https://api.easymarketing.de/configure_endpoints';
+    protected $_messageManager;
+
+    protected $_endpointUrl = 'https://api.easymarketing.de/configure_endpoints';
+
+    protected $_conversionTrackerUrl = 'https://api.easymarketing.de/conversion_tracker';
+
+    protected $_leadTrackerUrl = 'https://api.easymarketing.de/lead_tracker';
+
+    protected $_googleRemarketingUrl = 'https://api.easymarketing.de/google_remarketing_code';
 
     public function __construct(
         Data $helper,
-        \Magento\Store\Model\StoreManagerInterface $storeManager
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Framework\Message\ManagerInterface $messageManager
     ) {
         $this->_helper = $helper;
         $this->_storeManager = $storeManager;
+        $this->_messageManager = $messageManager;
     }
 
     public function execute(EventObserver $observer) {
@@ -27,50 +37,158 @@ class ConfigObserver implements ObserverInterface
             return;
         }
 
-        $this->_helper->log('Call configure_endpoints START');
+        $this->_helper->log('Easymarketing Configuration Save START');
 
-        $storeId = $this->_helper->getParam('store');
+        try {
+            $storeId = $this->_helper->getParam('store');
 
-        $baseUrl = $this->_storeManager->getStore($storeId)->getBaseUrl();
-        $paramsArray['website_url'] = parse_url($baseUrl, PHP_URL_HOST);
+            $baseUrl = $this->_storeManager->getStore($storeId)->getBaseUrl();
 
-        $paramsArray['access_token'] = $this->_helper->getConfig('easymarketingsection/easmarketinggeneral/access_token', $storeId);
+            $accessToken = $this->_helper->getConfig('easymarketingsection/easmarketinggeneral/access_token');
 
-        $paramsArray['shop_token'] = $this->_helper->getConfig('easymarketingsection/easmarketinggeneral/shop_token', $storeId);
+            /* Endpoint Configuration */
+            $this->_helper->log('Call configure_endpoints START');
 
-        $rootCategory = $this->_helper->getConfig('easymarketingsection/easmarketinggeneral/rootcategory');
-        if(empty($rootCategory)) $rootCategory = 1;
-        $paramsArray['shop_category_root_id'] = $rootCategory;
+            $paramsArray['website_url'] = parse_url($baseUrl, PHP_URL_HOST);
 
-        $paramsArray['categories_api_endpoint'] = $baseUrl . 'easymarketing/api/categories';
+            $paramsArray['access_token'] = $this->_helper->getConfig('easymarketingsection/easmarketinggeneral/access_token', $storeId);
 
-        $paramsArray['products_api_endpoint'] = $baseUrl . 'easymarketing/api/products';
+            $paramsArray['shop_token'] = $this->_helper->getConfig('easymarketingsection/easmarketinggeneral/shop_token', $storeId);
 
-        $accessToken = $this->_helper->getConfig('easymarketingsection/easmarketinggeneral/access_token');
-        //$accessToken = '';
+            $rootCategory = $this->_helper->getConfig('easymarketingsection/easmarketinggeneral/rootcategory');
+            if(empty($rootCategory)) $rootCategory = 1;
+            $paramsArray['shop_category_root_id'] = $rootCategory;
 
-        $result = $this->_helper->emserviceCall($this->_apiUrl . '?access_token=' . $accessToken, $paramsArray);
+            $paramsArray['categories_api_endpoint'] = $baseUrl . 'easymarketing/api/categories';
 
-        if($result['http_status'] == '401') {
-            $this->_helper->log('Wrong Access Token');
-            $this->_helper->dbUpdateOne("configuration_status", 0);
-            $this->_helper->dbUpdateOne('configuration_last_errors', 'Configure Endpoints: Wrong Access Token');
+            $paramsArray['products_api_endpoint'] = $baseUrl . 'easymarketing/api/products';
 
-        } elseif($result['http_status'] == '200') {
-            $this->_helper->log($result['content']);
-            $this->_helper->dbUpdateOne("configuration_status", 1);
+            $result = $this->_helper->emserviceCall($this->_endpointUrl . '?access_token=' . $accessToken, $paramsArray);
 
-        } elseif($result['http_status'] == '400') {
-            $resultArray = json_decode($result['content'], true);
+            if($result['http_status'] == '401') {
+                $this->_helper->log('Wrong Access Token');
+                $this->_helper->dbUpdateOne("configuration_status", 0);
+                $this->_helper->dbUpdateOne('configuration_last_errors', 'Configure Endpoints: Wrong Access Token');
 
-            $this->_helper->log($result['content']);
-            $this->_helper->dbUpdateOne("configuration_status", 0);
-            $this->_helper->dbUpdateOne('configuration_last_errors', implode(', ', $resultArray['errors']));
+            } elseif($result['http_status'] == '200') {
+                $this->_helper->log($result['content']);
+                $this->_helper->dbUpdateOne("configuration_status", 1);
 
-        } else {
-            $this->_helper->log('Unknown HTTP Response');
+            } elseif($result['http_status'] == '400') {
+                $resultArray = json_decode($result['content'], true);
+
+                $this->_helper->log($result['content']);
+                $this->_helper->dbUpdateOne("configuration_status", 0);
+                $this->_helper->dbUpdateOne('configuration_last_errors', implode(', ', $resultArray['errors']));
+
+            } else {
+                $this->_helper->log('Unknown HTTP Response');
+            }
+
+            $this->_helper->log('Call configure_endpoints END');
+            /* */
+
+            /* Conversion + Lead Tracking */
+            if($this->_helper->getConfig('easymarketingsection/easmarketinggeneral/google_tracking_enable') || $this->_helper->getConfig('easymarketingsection/easmarketinggeneral/facebook_tracking_enable')) {
+                $this->_helper->log('Call conversion_tracker START');
+
+                $result = $this->_helper->emserviceCall($this->_conversionTrackerUrl . '?access_token=' . $accessToken . '&website_url=' . parse_url($baseUrl, PHP_URL_HOST));
+
+                if($result['http_status'] == '401') {
+                    $this->_helper->log('Wrong Access Token');
+
+                } elseif($result['http_status'] == '200') {
+                    $this->_helper->log($result['content']);
+                    $resultArray = json_decode($result['content'], true);
+                    $updatedGoogle = $this->_helper->dbUpdateOne("google_conversion_code", $resultArray['code']);
+                    $updatedFb = 0;
+                    if(!empty($resultArray['fb_code'])) {
+                        $updatedFb = $this->_helper->dbUpdateOne("facebook_conversion_code", $resultArray['fb_code']);
+                    }
+
+                    if($updatedGoogle || $updatedFb) {
+                        $this->_messageManager->addWarningMessage(__('Für die Trackeraktivierung müssen die Magento Caches geleert werden.') );
+                    }
+                } elseif($result['http_status'] == '422') {
+                    $this->_helper->log($result['content']);
+                } else {
+                    $this->_helper->log('Unknown HTTP Response');
+                }
+
+                $this->_helper->log('Call conversion_tracker END');
+
+                /***/
+
+                $this->_helper->log('Call lead_tracker START');
+
+                $result = $this->_helper->emserviceCall($this->_leadTrackerUrl . '?access_token=' . $accessToken . '&website_url=' . parse_url($baseUrl, PHP_URL_HOST));
+
+                if($result['http_status'] == '401') {
+                    $this->_helper->log('Wrong Access Token');
+
+                } elseif($result['http_status'] == '200') {
+                    $this->_helper->log($result['content']);
+                    $resultArray = json_decode($result['content'], true);
+                    $updatedGoogle = $this->_helper->dbUpdateOne("google_lead_code", $resultArray['code']);
+                    $updatedFb = 0;
+                    if(!empty($resultArray['fb_code'])) {
+                        $updatedFb = $this->_helper->dbUpdateOne("facebook_lead_code", $resultArray['fb_code']);
+                    }
+
+                    if($updatedGoogle || $updatedFb) {
+                        $this->_messageManager->addWarningMessage(__('Für die Trackeraktivierung müssen die Magento Caches geleert werden.') );
+                    }
+                } elseif($result['http_status'] == '422') {
+                    $this->_helper->log($result['content']);
+                } else {
+                    $this->_helper->log('Unknown HTTP Response');
+                }
+
+                $this->_helper->log('Call lead_tracker END');
+            }
+            /* */
+
+            /* Google Remarketing Tracking */
+            if($this->_helper->getConfig('easymarketingsection/easmarketinggeneral/google_remarketing_enable')) {
+                $this->_helper->log('Call google_remarketing_code START');
+
+                $result = $this->_helper->emserviceCall($this->_googleRemarketingUrl . '?access_token=' . $accessToken . '&website_url=' . parse_url($baseUrl, PHP_URL_HOST));
+
+                if($result['http_status'] == '401') {
+                    $this->_helper->log('Wrong Access Token');
+
+                } elseif($result['http_status'] == '200') {
+                    $this->_helper->log($result['content']);
+                    $resultArray = json_decode($result['content'], true);
+
+                    if(!empty($resultArray['code'])) {
+                        $updatedGoogle = $this->_helper->dbUpdateOne("google_remarketing_code", $resultArray['code']);
+
+                        if($updatedGoogle) {
+                            $this->_messageManager->addWarningMessage(__('Für die Trackeraktivierung müssen die Magento Caches geleert werden.'));
+                        }
+                    } else {
+                        $this->_messageManager->addErrorMessage('Kein Remarketing Code verfügbar.');
+                    }
+
+                } elseif($result['http_status'] == '204') {
+                    $resultArray = json_decode($result['content'], true);
+                    $this->_helper->log($result['content']);
+                    $this->_messageManager->addErrorMessage($resultArray['message']);
+                } else {
+                    $this->_helper->log('Unknown HTTP Response');
+                }
+
+                $this->_helper->log('Call google_remarketing_code END');
+            }
+            /* */
+
+        } catch(\Exception $exception) {
+            $errorMessage = $exception->getFile() . " - " . $exception->getLine() . ": " . $exception->getMessage() . "\n". $exception->getTraceAsString();
+            $this->_helper->error($errorMessage);
+            throw new \Exception($errorMessage);
         }
 
-        $this->_helper->log('Call configure_endpoints END');
+        $this->_helper->log('Easymarketing Configuration Save END');
     }
 }

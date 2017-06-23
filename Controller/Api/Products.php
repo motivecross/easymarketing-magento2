@@ -60,6 +60,8 @@ class Products extends \Magento\Framework\App\Action\Action
             $collection->addAttributeToSelect('*');
             $collection->addAttributeToFilter('status', '1');
             $collection->addAttributeToFilter('type_id', array('neq' => 'bundle'));
+            $collection->addAttributeToFilter('type_id', array('neq' => 'configurable'));
+            $collection->addAttributeToFilter('type_id', array('neq' => 'grouped'));
 
             if(is_numeric($params['limit']) && $params['limit'] > 0) {
                 $limit = $params['limit'];

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="head.additional">
+            <block class="Motive\Easymarketing\Block\Page\Tracker" template="Motive_Easymarketing::page/head/facebookconversiontracker.phtml" name="motive_easymarketing_site_facebookconversiontracker" after="-" />
+        </referenceBlock>
+
+        <referenceContainer name="before.body.end">
+            <block class="Motive\Easymarketing\Block\Page\Tracker" template="Motive_Easymarketing::page/body/googleconversiontracker.phtml" name="motive_easymarketing_site_googleconversiontracker" after="-"/>
+        </referenceContainer>
+    </body>
+</page>

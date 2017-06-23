@@ -64,6 +64,16 @@ class Data extends AbstractHelper
         }
     }
 
+    public function emservicecallStart() {
+
+        $accessToken = $this->getConfig('easymarketingsection/easmarketinggeneral/access_token');
+
+        if(empty($accessToken)) {
+            return false;
+        } else {
+            return $accessToken;
+        }
+    }
 
     public function getConfig($configPath, $storeId = false) {
         if($storeId) {
@@ -135,12 +145,14 @@ class Data extends AbstractHelper
         return array('http_status' => $httpStatus, 'content' => $result);
     }
 
-    public function dbFetchOne($field) {
-        $fetch = $this->_dbconnection->fetchOne('SELECT data_value FROM `easymarketing_data` WHERE data_name = "' . $field . '"');
+    public function dbFetchOne($field, $storeId = 0) {
+
+        $fetch = $this->_dbconnection->fetchOne('SELECT data_value FROM `easymarketing_data` WHERE data_name = "' . $field . '"' . ' AND data_scope = "' . $storeId . '"');
         return $fetch;
     }
 
-    public function dbUpdateOne($field, $value) {
+    public function dbUpdateOne($field, $value, $storeId = 0) {
+
         $updatedRows = $this->_dbconnection->update('easymarketing_data', array('data_value' => $value), 'data_name = "' . $field . '"');
 
         return $updatedRows;
