@@ -1,6 +1,6 @@
 <?php
 
-namespace Inchoo\SetupTest\Setup;
+namespace Motive\Easymarketing\Setup;
 
 use Magento\Framework\Setup\UninstallInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
