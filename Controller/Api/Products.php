@@ -143,57 +143,62 @@ class Products extends \Magento\Framework\App\Action\Action
                 $product['image_url'] = $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA) . 'catalog/product' . $item->getImage();
                 $product['currency'] = $this->_storeManager->getStore()->getCurrentCurrencyCode();
 
-
-                $tmpInStock = $stockItem->getIsInStock();
-                if(!$tmpInStock) {
-                    $tmpQty = $stockItem->getQty();
-                    if($tmpQty < 1) {
-                        $stockItem->setQty(1);
-                    }
-                    $stockItem->setIsInStock(1);
-                    $stockItem->save();
-                }
-                $countryConf = $this->_helper->getConfig('easymarketingsection/easmarketinggeneral/shipping_countries');
-                if(empty($countryConf)) {
-                    $countryConf = 'DE';
-                }
-                $countryArray = explode(",", $countryConf);
                 $shippingArray = array();
-                foreach($countryArray as $country) {
-                    $quote = $this->_quoteFactory->create();
-                    if($shippingProductId != 0) {
-                        $quoteProduct = $this->_productFactory->create()->load($shippingProductId);
-                    } else {
-                        $quoteProduct = $item;
+                try {
+                    /*$tmpInStock = $stockItem->getIsInStock();
+                    if(!$tmpInStock) {
+                        $tmpQty = $stockItem->getQty();
+                        if($tmpQty < 1) {
+                            $stockItem->setQty(1);
+                        }
+                        $stockItem->setIsInStock(1);
+                        $stockItem->save();
+                    }*/
+                    $countryConf = $this->_helper->getConfig('easymarketingsection/easmarketinggeneral/shipping_countries');
+                    if(empty($countryConf)) {
+                        $countryConf = 'DE';
                     }
-                    $quote->addProduct($quoteProduct);
-                    $address = $quote->getShippingAddress();
-                    $address->setCountryId($country);
-                    $address->setCollectShippingRates(true);
-                    $quote->setTotalsCollectedFlag(false)->collectTotals();
-                    $address->collectShippingRates();
+                    $countryArray = explode(",", $countryConf);
+                    foreach($countryArray as $country) {
+                        $quote = $this->_quoteFactory->create();
+                        if($shippingProductId != 0) {
+                            $quoteProduct = $this->_productFactory->create()->load($shippingProductId);
+                        } else {
+                            $quoteProduct = $item;
+                        }
+                        $quote->addProduct($quoteProduct);
+                        $address = $quote->getShippingAddress();
+                        $address->setCountryId($country);
+                        $address->setCollectShippingRates(true);
+                        $quote->setTotalsCollectedFlag(false)->collectTotals();
+                        $address->collectShippingRates();
 
-                    $rates = $address->getShippingRatesCollection();
+                        $rates = $address->getShippingRatesCollection();
 
-                    $currentPrice = 9999999;
-                    foreach($rates as $rate) {
-                        $price = $rate->getData('price');
-                        if($price < $currentPrice) {
-                            $currentPrice = $price;
+                        $currentPrice = 9999999;
+                        foreach($rates as $rate) {
+                            $price = $rate->getData('price');
+                            if($price < $currentPrice) {
+                                $currentPrice = $price;
+                            }
+                        }
+                        if($currentPrice == 9999999) {
+                            continue;
+                        } else {
+                            $shippingArray[] = array('country' => $country, 'price' => floatval($currentPrice));
                         }
                     }
-                    if($currentPrice == 9999999) {
-                        continue;
-                    } else {
-                        $shippingArray[] = array('country' => $country, 'price' => floatval($currentPrice));
-                    }
-                }
-                if(!$tmpInStock) {
-                    if($tmpQty < 1) {
-                        $stockItem->setQty(0);
-                    }
-                    $stockItem->setIsInStock(0);
-                    $stockItem->save();
+                    /*if(!$tmpInStock) {
+                        if($tmpQty < 1) {
+                            $stockItem->setQty(0);
+                        }
+                        $stockItem->setIsInStock(0);
+                        $stockItem->save();
+                    }*/
+                } catch(\Exception $exception) {
+                    $errorMessage = $exception->getFile() . " - " . $exception->getLine() . ": " . $exception->getMessage() . "\n". $exception->getTraceAsString();
+                    $this->_helper->error($errorMessage);
+                    $shippingArray = array();
                 }
 
                 $product['shipping'] = $shippingArray;
