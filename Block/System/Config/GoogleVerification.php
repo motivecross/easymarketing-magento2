@@ -90,10 +90,11 @@ class GoogleVerification extends Field
     }
 
     public function getCurrentStatus() {
+        $enabled = $this->_helper->dbFetchOne("google_verification_enable");
         $status = $this->_helper->dbFetchOne("google_verification_status");
         $meta = $this->_helper->dbFetchOne("google_verification_meta");
 
-        if(empty($status) || empty($meta)) {
+        if(empty($enabled) || empty($status) || empty($meta)) {
             return 0;
         } else {
             return 1;

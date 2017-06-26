@@ -31,7 +31,7 @@ class SaveGoogleVerification extends \Magento\Framework\App\Action\Action
     public function execute() {
         $this->_helper->log('Call google_verification START');
 
-        if($this->_helper->dbFetchOne('google_verification_status')) {
+        if($this->_helper->dbFetchOne('google_verification_enable')) {
             $this->turnOff();
         } else {
             $this->turnOn();
@@ -42,6 +42,7 @@ class SaveGoogleVerification extends \Magento\Framework\App\Action\Action
 
     protected function turnOff() {
         $this->_helper->dbUpdateOne("google_verification_status", 0);
+        $this->_helper->dbUpdateOne("google_verification_enable", 0);
 
         foreach ($this->_cacheFrontendPool as $cacheFrontend) {
             $cacheFrontend->clean();
@@ -69,7 +70,7 @@ class SaveGoogleVerification extends \Magento\Framework\App\Action\Action
         } elseif($result['http_status'] == '200') {
             $resultArray = json_decode($result['content'], true);
             $this->_helper->dbUpdateOne("google_verification_meta", $resultArray['meta_tag']);
-            $this->_helper->dbUpdateOne("google_verification_status", 1);
+            $this->_helper->dbUpdateOne("google_verification_enable", 1);
 
             foreach ($this->_cacheFrontendPool as $cacheFrontend) {
                 $cacheFrontend->clean();
@@ -85,9 +86,13 @@ class SaveGoogleVerification extends \Magento\Framework\App\Action\Action
                 $this->_helper->sendResponse(array('status' => 0));
 
             } elseif($result2['http_status'] == '200') {
+                $this->_helper->dbUpdateOne("google_verification_status", 1);
+
                 $this->_helper->sendResponse(array('status' => 2));
 
             } elseif($result2['http_status'] == '400') {
+                $this->_helper->dbUpdateOne("google_verification_status", 0);
+
                 $resultArray2 = json_decode($result2['content'], true);
 
                 $this->_helper->sendResponse(array('status' => 1, 'errors' => $resultArray2['errors']));

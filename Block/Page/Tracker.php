@@ -35,7 +35,7 @@ class Tracker extends Template
     }
 
     public function getGoogleVerificationCode() {
-        if($this->_helper->dbFetchOne("google_verification_status")) {
+        if($this->_helper->dbFetchOne("google_verification_enable")) {
             return $this->_helper->dbFetchOne("google_verification_meta");
         } else {
             return FALSE;

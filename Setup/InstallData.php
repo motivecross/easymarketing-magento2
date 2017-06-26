@@ -20,6 +20,7 @@ class InstallData implements InstallDataInterface
 
         $setup->getConnection()->query("INSERT INTO easymarketing_data SET data_name = 'configuration_status', data_value = 0");
         $setup->getConnection()->query("INSERT INTO easymarketing_data SET data_name = 'configuration_last_errors', data_value = ''");
+        $setup->getConnection()->query("INSERT INTO easymarketing_data SET data_name = 'google_verification_enable', data_value = 0");
         $setup->getConnection()->query("INSERT INTO easymarketing_data SET data_name = 'google_verification_status', data_value = 0");
         $setup->getConnection()->query("INSERT INTO easymarketing_data SET data_name = 'google_verification_meta', data_value = ''");
         $setup->getConnection()->query("INSERT INTO easymarketing_data SET data_name = 'google_conversion_code', data_value = ''");
