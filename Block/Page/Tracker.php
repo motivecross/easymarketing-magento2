@@ -109,8 +109,8 @@ class Tracker extends Template
             try {
                 $replaceArray = array();
 
-                $replaceArray[0] = "ecomm_prodid: '[]'";
-                $replaceArray[2] = "ecomm_totalvalue: ''";
+                $replaceArray[0] = "ecomm_prodid: []";
+                $replaceArray[2] = "ecomm_totalvalue: 0";
 
                 switch($this->_request->getFullActionName()) {
                     case 'cms_index_index':
@@ -120,8 +120,8 @@ class Tracker extends Template
                         $replaceArray[1] = "ecomm_pagetype: 'product'";
                         $product = $this->_registry->registry('current_product');
                         if(!empty($product->getId())) {
-                            $replaceArray[0] = "ecomm_prodid: '" . $product->getId() . "'";
-                            $replaceArray[2] = "ecomm_totalvalue: '" . $product->getPrice() . "'";
+                            $replaceArray[0] = "ecomm_prodid: " . $product->getId();
+                            $replaceArray[2] = "ecomm_totalvalue: " . $product->getPrice();
                         }
                         break;
                     case 'catalog_category_view':
@@ -138,7 +138,7 @@ class Tracker extends Template
                         $subTotal = $order->getSubtotal();
 
                         if(!empty($subTotal)) {
-                            $replaceArray[2] = "ecomm_totalvalue: '" . $subTotal . "'";
+                            $replaceArray[2] = "ecomm_totalvalue: " . $subTotal . "";
                         }
                         break;
                     case 'checkout_cart_index':
@@ -154,8 +154,8 @@ class Tracker extends Template
                             $totalPrice += ($product->getPrice() * $item->getQty());
                         }
                         if(!empty($productIdArray)) {
-                            $replaceArray[0] = "ecomm_prodid: '[" . implode(",", $productIdArray) . "]'";
-                            $replaceArray[2] = "ecomm_totalvalue: '" . $totalPrice . "'";
+                            $replaceArray[0] = "ecomm_prodid: [" . implode(",", $productIdArray) . "]";
+                            $replaceArray[2] = "ecomm_totalvalue: " . $totalPrice . "";
                         }
 
                         break;
