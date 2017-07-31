@@ -109,8 +109,8 @@ class Tracker extends Template
             try {
                 $replaceArray = array();
 
-                $replaceArray[0] = "ecomm_prodid: []";
-                $replaceArray[2] = "ecomm_totalvalue: 0";
+                $replaceArray[0] = "ecomm_prodid: [],";
+                $replaceArray[2] = "";
 
                 switch($this->_request->getFullActionName()) {
                     case 'cms_index_index':
@@ -120,12 +120,14 @@ class Tracker extends Template
                         $replaceArray[1] = "ecomm_pagetype: 'product'";
                         $product = $this->_registry->registry('current_product');
                         if(!empty($product->getId())) {
-                            $replaceArray[0] = "ecomm_prodid: " . $product->getId();
-                            $replaceArray[2] = "ecomm_totalvalue: " . $product->getPrice();
+                            $replaceArray[0] = "ecomm_prodid: " . $product->getId() . ",";
+                            $replaceArray[2] = "ecomm_totalvalue: " . $product->getPrice() . ",";
                         }
                         break;
                     case 'catalog_category_view':
-                        $replaceArray[1] = "ecomm_pagetype: 'category'";
+                        $category = $this->_registry->registry('current_category');
+                        $categoryName = $category->getName();
+                        $replaceArray[1] = "ecomm_pagetype: 'category',\necomm_category: '" . $categoryName . "'";
                         break;
                     case 'catalogsearch_result_index':
                         $replaceArray[1] = "ecomm_pagetype: 'searchresults'";
@@ -138,7 +140,7 @@ class Tracker extends Template
                         $subTotal = $order->getSubtotal();
 
                         if(!empty($subTotal)) {
-                            $replaceArray[2] = "ecomm_totalvalue: " . $subTotal . "";
+                            $replaceArray[2] = "ecomm_totalvalue: " . $subTotal . ",";
                         }
                         break;
                     case 'checkout_cart_index':
@@ -154,8 +156,8 @@ class Tracker extends Template
                             $totalPrice += ($product->getPrice() * $item->getQty());
                         }
                         if(!empty($productIdArray)) {
-                            $replaceArray[0] = "ecomm_prodid: [" . implode(",", $productIdArray) . "]";
-                            $replaceArray[2] = "ecomm_totalvalue: " . $totalPrice . "";
+                            $replaceArray[0] = "ecomm_prodid: [" . implode(",", $productIdArray) . "],";
+                            $replaceArray[2] = "ecomm_totalvalue: " . $totalPrice . ",";
                         }
 
                         break;
@@ -163,7 +165,7 @@ class Tracker extends Template
                         $replaceArray[1] = "ecomm_pagetype: 'other'";
                 }
 
-                $code = str_replace(array("ecomm_prodid: 'REPLACE_WITH_VALUE'", "ecomm_pagetype: 'REPLACE_WITH_VALUE'", "ecomm_totalvalue: 'REPLACE_WITH_VALUE'"), $replaceArray, $code);
+                $code = str_replace(array("ecomm_prodid: 'REPLACE_WITH_VALUE',", "ecomm_pagetype: 'REPLACE_WITH_VALUE',", "ecomm_totalvalue: 'REPLACE_WITH_VALUE',"), $replaceArray, $code);
 
             } catch(\Exception $exception) {
                 $errorMessage = $exception->getFile() . " - " . $exception->getLine() . ": " . $exception->getMessage() . "\n" . $exception->getTraceAsString();
