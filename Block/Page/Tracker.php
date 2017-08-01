@@ -15,6 +15,8 @@ class Tracker extends Template
 
     protected $_productRepository;
 
+    protected $_categoryRepository;
+
     protected $_helper;
 
     public function __construct(
@@ -24,12 +26,14 @@ class Tracker extends Template
         \Magento\Sales\Model\OrderRepository $orderRepository,
         \Magento\Framework\Registry $registry,
         \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
+        \Magento\Catalog\Api\CategoryRepositoryInterface $categoryRepository,
         Data $helper
     ) {
         $this->_checkoutSession = $checkoutSession;
         $this->_orderRepository = $orderRepository;
         $this->_registry = $registry;
         $this->_productRepository = $productRepository;
+        $this->_categoryRepository = $categoryRepository;
         $this->_helper = $helper;
         parent::__construct($context, $data);
     }
@@ -118,10 +122,24 @@ class Tracker extends Template
                         break;
                     case 'catalog_product_view':
                         $replaceArray[1] = "ecomm_pagetype: 'product'";
+
                         $product = $this->_registry->registry('current_product');
                         if(!empty($product->getId())) {
                             $replaceArray[0] = "ecomm_prodid: " . $product->getId() . ",";
                             $replaceArray[2] = "ecomm_totalvalue: " . $product->getPrice() . ",";
+
+                            if($product->getTypeId() == "configurable") {
+                                $children = $product->getTypeInstance()->getUsedProducts($product);
+                                $replaceArray[2] = "ecomm_totalvalue: " . current($children)->getPrice() . ",";
+                            }
+
+                            $categoryIds = $product->getCategoryIds();
+                            if(count($categoryIds) ){
+                                $category = $this->_categoryRepository->get($categoryIds[0]);
+
+                                $categoryName = $category->getName();
+                                $replaceArray[1] = "ecomm_pagetype: 'product',\necomm_category: '" . $categoryName . "'";
+                            }
                         }
                         break;
                     case 'catalog_category_view':
