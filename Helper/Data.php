@@ -46,7 +46,7 @@ class Data extends AbstractHelper
 
     protected function checkShoptoken() {
         $shopToken = $this->getParam('shop_token');
-        if($shopToken == $this->getConfig('easymarketingsection/easmarketinggeneral/shop_token')) {
+        if(!empty($shopToken) && $shopToken == $this->getConfig('easymarketingsection/easmarketinggeneral/shop_token')) {
             return true;
         } else {
             return false;

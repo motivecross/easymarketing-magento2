@@ -94,7 +94,13 @@ class Products extends \Magento\Framework\App\Action\Action
                     $product['description'] = $item->getDescription();
                 }
 
-                $product['categories'] = $item->getCategoryIds();
+                $categoryIds = $item->getCategoryIds();
+                if(empty($categoryIds) && !empty($parentIDs)) {
+                    $categoryProduct = $this->_productFactory->create()->load($parentIDs[0]);
+                    $categoryIds = $categoryProduct->getCategoryIds();
+                }
+
+                $product['categories'] = $categoryIds;
 
                 $condition = $this->getMappedConfig('condition', $item);
                 $conditionPossibilities = array('new', 'refurbished', 'used');

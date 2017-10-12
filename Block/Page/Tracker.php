@@ -126,15 +126,15 @@ class Tracker extends Template
                         $product = $this->_registry->registry('current_product');
                         if(!empty($product->getId())) {
                             $replaceArray[0] = "ecomm_prodid: " . $product->getId() . ",";
-                            $replaceArray[2] = "ecomm_totalvalue: " . $product->getPrice() . ",";
+                            $replaceArray[2] = "ecomm_totalvalue: " . $product->getPrice() . ","; //getFinalPrice?
 
                             if($product->getTypeId() == "configurable") {
                                 $children = $product->getTypeInstance()->getUsedProducts($product);
-                                $replaceArray[2] = "ecomm_totalvalue: " . current($children)->getPrice() . ",";
+                                $replaceArray[2] = "ecomm_totalvalue: " . current($children)->getPrice() . ","; //getFinalPrice?
                             }
 
                             $categoryIds = $product->getCategoryIds();
-                            if(count($categoryIds) ){
+                            if(count($categoryIds)){
                                 $category = $this->_categoryRepository->get($categoryIds[0]);
 
                                 $categoryName = $category->getName();

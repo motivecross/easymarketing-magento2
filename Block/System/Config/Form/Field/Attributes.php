@@ -28,7 +28,7 @@ class Attributes extends Field
 
         $attributes = $this->_helper->getAllAttributes();
 
-        $html .= '<ul id="' . $element->getId() . '_source" class="ui_select source sortable" style="list-style-type: none; height: 200px; overflow-x: none; overflow-y: scroll; margin-bottom: 0;">';
+        $html .= '<ul id="' . $element->getId() . '_source" class="ui_select source sortable" style="list-style-type: none; height: 200px; overflow-x: hidden; overflow-y: scroll; margin-bottom: 0;">';
         if($attributes) {
             foreach($attributes as $attribute) {
                 if(in_array($attribute['value'], $selected)) continue;
@@ -38,7 +38,7 @@ class Attributes extends Field
 
         $html .= '</ul></td>';
 
-        $html .= '<td width="50%" style="padding: 0;"><ul id="' . $element->getId() . '_selected" class="ui_select selected sortable" style="list-style-type: none; height: 200px; overflow-x: none; overflow-y: scroll; margin-bottom: 0;">';
+        $html .= '<td width="50%" style="padding: 0;"><ul id="' . $element->getId() . '_selected" class="ui_select selected sortable" style="list-style-type: none; height: 200px; overflow-x: hidden; overflow-y: scroll; margin-bottom: 0;">';
 
         $selectedIterator = 0;
         $defaultValue = "";
@@ -60,20 +60,19 @@ class Attributes extends Field
         $html .= '<div style="display:none;">' . $element->getElementHtml() . '</div>';
         $html .= '<script type="text/javascript">
                 require(["jquery", "jquery/ui"], function(jQuery){
-                        jQuery(document).ready( function() {
-                            jQuery("#' . $element->getId() . '_source, #' . $element->getId() . '_selected").sortable({
-                                connectWith: "#' . $element->getId() . '_table .sortable",
-                                stop: function(event, ui) {
-                                    var values = [];
-                                    values.push(jQuery("#' . $element->getId() . '_default").val());
-                                    jQuery("#' . $element->getId() . '_selected").find("li").each(function(index, element) {
-                                        values.push(jQuery(element).data("code"));
-                                    });
-                                    jQuery("#' . $element->getId() . '").val(values.join(","));                                    
-                                }
-                            }).disableSelection();
-                        });
-                        
+                    jQuery(document).ready( function() {
+                        jQuery("#' . $element->getId() . '_source, #' . $element->getId() . '_selected").sortable({
+                            connectWith: "#' . $element->getId() . '_table .sortable",
+                            stop: function(event, ui) {
+                                var values = [];
+                                values.push(jQuery("#' . $element->getId() . '_default").val());
+                                jQuery("#' . $element->getId() . '_selected").find("li").each(function(index, element) {
+                                    values.push(jQuery(element).data("code"));
+                                });
+                                jQuery("#' . $element->getId() . '").val(values.join(","));                                    
+                            }
+                        }).disableSelection();
+                    
                         jQuery("#' . $element->getId() . '_default").change(function() {
                             var values = [];
                             values.push(jQuery(this).val());
@@ -82,6 +81,7 @@ class Attributes extends Field
                             });
                             jQuery("#' . $element->getId() . '").val(values.join(","));    
                         });
+                    });
                 });
                 </script>';
 
