@@ -10,7 +10,7 @@ class Products extends \Magento\Framework\App\Action\Action
 
     protected $_productCollectionFactory;
 
-    protected $_stockItemRepository;
+    protected $_stockRegistry;
 
     protected $_storeManager;
 
@@ -26,7 +26,7 @@ class Products extends \Magento\Framework\App\Action\Action
         \Magento\Framework\App\Action\Context $context,
         Data $helper,
         \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory,
-        \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository,
+        \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Shipping\Model\Config $shipConfig,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
@@ -35,7 +35,7 @@ class Products extends \Magento\Framework\App\Action\Action
     ) {
         $this->_helper = $helper;
         $this->_productCollectionFactory = $productCollectionFactory;
-        $this->_stockItemRepository = $stockItemRepository;
+        $this->_stockRegistry = $stockRegistry;
         $this->_storeManager = $storeManager;
         $this->_shipConfig = $shipConfig;
         $this->_quoteFactory = $quoteFactory;
@@ -76,7 +76,7 @@ class Products extends \Magento\Framework\App\Action\Action
             foreach($collection->getItems() as $item) {
                 $product = array();
                 $productId = $item->getId();
-                $stockItem = $this->_stockItemRepository->get($productId);
+                $stockItem = $this->_stockRegistry->getStockItem($productId, $item->getStore()->getWebsiteId());
 
                 $product['id'] = intval($productId);
 
@@ -125,7 +125,7 @@ class Products extends \Magento\Framework\App\Action\Action
                         if($child->getPrice() < $price) {
                             $price = $child->getPrice();
                             $shippingProductId = $child->getId();
-                            $stockItem = $this->_stockItemRepository->get($shippingProductId);
+                            $stockItem = $this->_stockRegistry->getStockItem($shippingProductId, $child->getStore()->getWebsiteId());
                         }
                     }
                 }
