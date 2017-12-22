@@ -22,6 +22,10 @@ class Products extends \Magento\Framework\App\Action\Action
 
     protected $_productFactory;
 
+    protected $_productStatus;
+
+    protected $_productVisibility;
+
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         Data $helper,
@@ -31,7 +35,9 @@ class Products extends \Magento\Framework\App\Action\Action
         \Magento\Shipping\Model\Config $shipConfig,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable $catalogProductTypeConfigurable,
-        \Magento\Catalog\Model\ProductFactory $productFactory
+        \Magento\Catalog\Model\ProductFactory $productFactory,
+        \Magento\Catalog\Model\Product\Attribute\Source\Status $productStatus,
+        \Magento\Catalog\Model\Product\Visibility $productVisibility
     ) {
         $this->_helper = $helper;
         $this->_productCollectionFactory = $productCollectionFactory;
@@ -41,6 +47,8 @@ class Products extends \Magento\Framework\App\Action\Action
         $this->_quoteFactory = $quoteFactory;
         $this->_catalogProductTypeConfigurable = $catalogProductTypeConfigurable;
         $this->_productFactory = $productFactory;
+        $this->_productStatus = $productStatus;
+        $this->_productVisibility = $productVisibility;
         return parent::__construct($context);
     }
 
@@ -58,7 +66,9 @@ class Products extends \Magento\Framework\App\Action\Action
             $collection = $this->_productCollectionFactory->create();
             $collection->setOrder('id', 'ASC');
             $collection->addAttributeToSelect('*');
-            $collection->addAttributeToFilter('status', '1');
+            $collection->addWebsiteFilter($this->_storeManager->getWebsite()->getId());
+            $collection->addAttributeToFilter('status', ['in' => $this->_productStatus->getVisibleStatusIds()]);
+            $collection->setVisibility($this->_productVisibility->getVisibleInSiteIds());
             $collection->addAttributeToFilter('type_id', array('neq' => 'bundle'));
             $collection->addAttributeToFilter('type_id', array('neq' => 'configurable'));
             $collection->addAttributeToFilter('type_id', array('neq' => 'grouped'));
@@ -74,6 +84,7 @@ class Products extends \Magento\Framework\App\Action\Action
 
             $productsArray = array();
             foreach($collection->getItems() as $item) {
+
                 $product = array();
                 $productId = $item->getId();
                 $stockItem = $this->_stockItemRepository->get($productId);
