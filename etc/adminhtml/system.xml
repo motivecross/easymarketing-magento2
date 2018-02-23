@@ -10,7 +10,7 @@
             <tab>emtab</tab>
             <resource>Motive_Easymarketing::easymarketing_configuration</resource>
             <group id="easmarketinggeneral" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
-                <label>Allgemein</label>
+                <label>General</label>
                 <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Aktiviert</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
