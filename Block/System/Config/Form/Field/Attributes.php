@@ -1,5 +1,13 @@
 <?php
 
+#######
+# Motive X
+# Sylter Str. 15, 90425 Nürnberg, Germany
+# Telefon: +49 (0)911/49 522 566
+# Mail: info@motive.de
+# Internet: www.motive-x.com
+#######
+
 namespace Motive\Easymarketing\Block\System\Config\Form\Field;
 
 use Magento\Backend\Block\Template\Context;
@@ -56,7 +64,7 @@ class Attributes extends Field
         }
 
         $html .= '</ul></td></tr></tbody></table>';
-        $html .= '<br><div><span style="display: inline-block; width: 30%;">Standardwert: </span><input id="' . $element->getId() . '_default" type="text" style="width:70%;" value="' . $defaultValue . '"></span>';
+        $html .= '<br><div><span style="display: inline-block; width: 30%;">' . __("Default Value") . ': </span><input id="' . $element->getId() . '_default" type="text" style="width:70%;" value="' . $defaultValue . '"></span>';
         $html .= '<div style="display:none;">' . $element->getElementHtml() . '</div>';
         $html .= '<script type="text/javascript">
                 require(["jquery", "jquery/ui"], function(jQuery){

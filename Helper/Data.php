@@ -1,5 +1,13 @@
 <?php
 
+#######
+# Motive X
+# Sylter Str. 15, 90425 Nürnberg, Germany
+# Telefon: +49 (0)911/49 522 566
+# Mail: info@motive.de
+# Internet: www.motive-x.com
+#######
+
 namespace Motive\Easymarketing\Helper;
 
 use Magento\Catalog\Model\Entity\AttributeFactory;
@@ -56,11 +64,11 @@ class Data extends AbstractHelper
     public function apiStart() {
 
         if(!$this->getConfig('easymarketingsection/easmarketinggeneral/enable')) {
-            $this->sendErrorAndExit('Modul nicht aktiviert');
+            $this->sendErrorAndExit('Module not activated');
         }
 
         if(!$this->checkShoptoken()) {
-            $this->sendErrorAndExit('Falscher Shop Token');
+            $this->sendErrorAndExit('Wrong Shop Token');
         }
     }
 
@@ -100,7 +108,7 @@ class Data extends AbstractHelper
         foreach($params as $param) {
             $value = $this->getParam($param);
             if(empty($value) && $value !== 0 && $value !== '0') {
-                $this->sendErrorAndExit('Nicht genügend Parameter');
+                $this->sendErrorAndExit('Not enough parameters');
             } else {
                 $returnArray[$param] = $value;
             }
