@@ -1,5 +1,13 @@
 <?php
 
+#######
+# Motive X
+# Sylter Str. 15, 90425 Nürnberg, Germany
+# Telefon: +49 (0)911/49 522 566
+# Mail: info@motive.de
+# Internet: www.motive-x.com
+#######
+
 namespace Motive\Easymarketing\Block\System\Config\Form\Field;
 
 use Magento\Backend\Block\Template\Context;
@@ -29,7 +37,7 @@ class Status extends Field
         $html = '<div style="margin-top: 7px;">';
 
         if(!$this->_helper->getConfig('easymarketingsection/easmarketinggeneral/enable')) {
-            $html .= "Modul nicht aktiviert";
+            $html .= __('Module not activated');
         } else {
 
             try {
@@ -38,7 +46,7 @@ class Status extends Field
                 if($currentStatus == 0) {
                     $lastErrors = $this->_helper->dbFetchOne('configuration_last_errors');
                     if(empty($lastErrors)) {
-                        $html .= 'Konfiguration fehlerhaft.';
+                        $html .= __('Configuration faulty');
                     } else {
                         $html .= '- ' . str_replace(', ', '<br>- ', $lastErrors);
                     }
@@ -54,21 +62,21 @@ class Status extends Field
 
                     if($result['http_status'] == '401') {
                         $this->_helper->log('Wrong Access Token');
-                        $html .= 'Wrong Access Token';
+                        $html .= __('Wrong Access Token');
 
                     } elseif($result['http_status'] == '200') {
                         $this->_helper->log($result['content']);
                         $resultArray = json_decode($result['content'], true);
                         if($resultArray['api_properly_setup_at'] > 1) {
-                            $html .= 'Erfolgreich eingerichtet.';
-                            $html .= '<br>Kategorien indexiert: ' . $resultArray['num_categories'];
-                            $html .= '<br>Produkte indexiert: ' . $resultArray['num_products'];
+                            $html .= __('Set up successful!');
+                            $html .= '<br>' . __('Indexed categories') . ': ' . $resultArray['num_categories'];
+                            $html .= '<br>' . __('Indexed products') . ': ' . $resultArray['num_products'];
                             if(empty($resultArray['updated_at'])) {
-                                $lastIndexed = "Nie";
+                                $lastIndexed = __('Never');
                             } else {
                                 $lastIndexed = date('d.m.Y H:i:s', $resultArray['updated_at']);
                             }
-                            $html .= '<br>Letzte Indexierung: ' . $lastIndexed;
+                            $html .= '<br>' . __('Last indexed') . ': ' . $lastIndexed;
                         }
                     } elseif($result['http_status'] == '400') {
                         $resultArray = json_decode($result['content'], true);

@@ -1,5 +1,13 @@
 <?php
 
+#######
+# Motive X
+# Sylter Str. 15, 90425 Nürnberg, Germany
+# Telefon: +49 (0)911/49 522 566
+# Mail: info@motive.de
+# Internet: www.motive-x.com
+#######
+
 namespace Motive\Easymarketing\Block\System\Config;
 
 use Magento\Backend\Block\Template\Context;
@@ -82,7 +90,7 @@ class GoogleVerification extends Field
         )->setData(
             [
                 'id' => 'verification_button',
-                'label' => __('Google Site Verification durchführen / aufheben'),
+                'label' => __('Enable / Disable Google Site Verification'),
             ]
         );
 

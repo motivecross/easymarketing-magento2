@@ -12,7 +12,7 @@
 
             function callAlert(text) {
                 alert({
-                    title: 'Google Site Verification',
+                    title: jQuery.mage.__('Google Site Verification'),
                     content: text
                 });
             }
@@ -23,9 +23,9 @@
                     type: 'popup',
                     responsive: true,
                     innerScroll: true,
-                    title: 'Google Site Verification',
+                    title: jQuery.mage.__('Google Site Verification'),
                     buttons: [{
-                        text: jQuery.mage.__('Ja'),
+                        text: jQuery.mage.__('Yes'),
                         class: '',
                         click: function() {
                             this.closeModal();
@@ -39,17 +39,17 @@
                                 onComplete: function(response) {
                                     var responseObj = JSON.parse(response.responseText);
                                     if(responseObj.status == 0) {
-                                        callAlert("Falscher Access Token.");
+                                        callAlert(jQuery.mage.__('Wrong Access Token.'));
                                     } else if(responseObj.status == 1) {
                                         callAlert(responseObj.errors.join('<br>'));
                                     } else if(responseObj.status == 2) {
                                         jQuery('#googleverificationstatus').attr('src', '<?php echo $block->getSuccessImage() ?>');
-                                        callAlert('Google Verification erfolgreich.');
+                                        callAlert(jQuery.mage.__('Google Verification successful.'));
                                         $modalParagraphs.eq(0).hide();
                                         $modalParagraphs.eq(1).show();
                                     } else if(responseObj.status == 3) {
                                         jQuery('#googleverificationstatus').attr('src', '<?php echo $block->getFailImage() ?>');
-                                        callAlert('Google Verification deaktiviert.')
+                                        callAlert(jQuery.mage.__('Google Verification disabled.'));
                                         $modalParagraphs.eq(1).hide();
                                         $modalParagraphs.eq(0).show();
                                     }
@@ -57,7 +57,7 @@
                             });
                         }
                     }, {
-                        text: jQuery.mage.__('Nein'),
+                        text: jQuery.mage.__('No'),
                         class: '',
                         click: function() {
                             this.closeModal();
@@ -74,11 +74,8 @@
     </script>
 
     <div id="verification-modal" style="display: none;">
-        <p style="<?php if($block->getCurrentStatus()) echo 'display: none;' ?>">Ich stimme zu, dass Google easymarketing bei meiner URL-Verifikation als weiteren "Inhaber" einträgt, damit
-            easymarketing meine Daten für Google Shopping über die Schnittstelle pflegen und auslesen kann. Ich kann
-            diese Zustimmung natürlich jederzeit widerrufen. easymarketing wird meine Daten unter keinen Umständen zu
-            anderen Zwecken als meiner Kampagnen-Steuerung verwenden, weitergeben oder bei sich speichern.<br><br>Bei Durchführung der Verification wird der Magento Cache geleert.</p>
-        <p style="<?php if(!$block->getCurrentStatus()) echo 'display: none;' ?>">Bei Aufhebung der Verifikation wird der Magento Cache geleert.</p>
+        <p style="<?php if($block->getCurrentStatus()) echo 'display: none;' ?>"><?php echo __('I agree on adding emarketing as additional &quot;owner&quot; when enabling the Google Site Verification. This is required for authorizing emarketing to import my product data through the API. Of course I can revoke this consent at any time. Under no circumstances will emarketing use, share or save my data for purposes other than my campaign control.<br><br>When performing the verification, the Magento Cache will be flushed.'); ?></p>
+        <p style="<?php if(!$block->getCurrentStatus()) echo 'display: none;' ?>"><?php echo __('When the Verification is revoked, the Magento Cache will be flushed.'); ?></p>
     </div>
 <?php echo $block->getButtonHtml() ?>
 <span style="display: inline-block; width: 20px; height: 20px; position: relative; top: 3px; left: 10px;"><img id="googleverificationstatus" src="<?php echo $block->getCurrentStatusImage() ?>"></span>
